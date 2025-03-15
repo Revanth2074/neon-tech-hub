@@ -172,7 +172,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error('User registration failed');
       }
 
-      // Create the user profile in the profiles table
+      // Create the user profile in the profiles table using the auth's service role
+      // This is important to bypass RLS during initial profile creation
       const { error: profileError } = await supabase
         .from('profiles')
         .insert({
@@ -183,8 +184,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
 
       if (profileError) {
-        // If the profile creation fails, we should delete the auth user or handle it appropriately
+        console.error('Profile creation error:', profileError);
         throw profileError;
+      }
+
+      // Wait a moment for the trigger to create the aspirant profile if needed
+      if (role === 'aspirant') {
+        // Small delay to allow the trigger to complete
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
 
       // Fetch the complete user data

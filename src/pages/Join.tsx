@@ -39,6 +39,11 @@ export default function Join() {
       return;
     }
 
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -50,7 +55,16 @@ export default function Join() {
       });
     } catch (err: any) {
       console.error(err);
-      setError(err.message || 'Could not create account. Please try again.');
+      // More user-friendly error messages
+      if (err.message.includes('already registered')) {
+        setError('This email is already registered. Please use a different email or login.');
+      } else if (err.message.includes('provide an email')) {
+        setError('Please provide a valid email address.');
+      } else if (err.message.includes('password')) {
+        setError('Password is too weak. Please choose a stronger password.');
+      } else {
+        setError(err.message || 'Could not create account. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }

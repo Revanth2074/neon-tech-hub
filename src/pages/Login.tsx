@@ -41,7 +41,14 @@ export default function Login() {
       });
     } catch (err: any) {
       console.error(err);
-      setError(err.message || 'Invalid email or password. Please try again.');
+      // More user-friendly error messages
+      if (err.message.includes('Invalid login credentials')) {
+        setError('Invalid email or password. Please try again.');
+      } else if (err.message.includes('Email not confirmed')) {
+        setError('Please confirm your email address before logging in.');
+      } else {
+        setError(err.message || 'Failed to log in. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
