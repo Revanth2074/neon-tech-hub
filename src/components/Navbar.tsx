@@ -1,12 +1,15 @@
 
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { Menu, X, ChevronDown } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Menu, X, ChevronDown, LogIn, UserCircle } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,6 +22,22 @@ const Navbar = () => {
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
+
+  const handleLogout = () => {
+    logout();
+    closeMenu();
+  };
+
+  const handleDashboardClick = () => {
+    closeMenu();
+    if (user?.role === 'admin') {
+      navigate('/admin/dashboard');
+    } else if (user?.role === 'coreteam') {
+      navigate('/team/dashboard');
+    } else {
+      navigate('/dashboard');
+    }
+  };
 
   return (
     <header
@@ -98,18 +117,45 @@ const Navbar = () => {
               </Link>
             </div>
           </div>
-          <Link
-            to="/login"
-            className="btn-secondary text-sm py-2 px-4"
-          >
-            Login
-          </Link>
-          <Link
-            to="/join"
-            className="btn-primary text-sm py-2 px-4"
-          >
-            Join Now
-          </Link>
+          
+          {user ? (
+            <div className="relative group">
+              <button className="btn-secondary text-sm py-2 px-4 flex items-center gap-2">
+                <UserCircle className="w-4 h-4" />
+                {user.name.split(' ')[0]}
+              </button>
+              <div className="absolute top-full right-0 mt-1 w-48 rounded-lg overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 bg-tech-muted border border-border shadow-xl">
+                <button
+                  onClick={handleDashboardClick}
+                  className="block w-full text-left px-4 py-2 hover:bg-white/5 text-sm"
+                >
+                  Dashboard
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="block w-full text-left px-4 py-2 hover:bg-white/5 text-sm text-destructive"
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="btn-secondary text-sm py-2 px-4 flex items-center gap-2"
+              >
+                <LogIn className="w-4 h-4" />
+                Login
+              </Link>
+              <Link
+                to="/join"
+                className="btn-primary text-sm py-2 px-4"
+              >
+                Join Now
+              </Link>
+            </>
+          )}
         </nav>
 
         {/* Mobile menu button */}
@@ -178,20 +224,39 @@ const Navbar = () => {
             Refer & Earn
           </Link>
           <div className="flex flex-col sm:flex-row gap-4 mt-6">
-            <Link
-              to="/login"
-              className="btn-secondary text-center"
-              onClick={closeMenu}
-            >
-              Login
-            </Link>
-            <Link
-              to="/join"
-              className="btn-primary text-center"
-              onClick={closeMenu}
-            >
-              Join Now
-            </Link>
+            {user ? (
+              <>
+                <button
+                  onClick={handleDashboardClick}
+                  className="btn-secondary text-center"
+                >
+                  Dashboard
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="btn-primary text-center bg-destructive hover:bg-destructive/90 border-destructive"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="btn-secondary text-center"
+                  onClick={closeMenu}
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/join"
+                  className="btn-primary text-center"
+                  onClick={closeMenu}
+                >
+                  Join Now
+                </Link>
+              </>
+            )}
           </div>
         </nav>
       </div>
