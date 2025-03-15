@@ -1,6 +1,6 @@
 
 import AnimatedCard from "./ui/AnimatedCard";
-import { ArrowRight, Code, Cpu, Robot, Car } from "lucide-react";
+import { ArrowRight, Code, Cpu, Bot, Car } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const AboutSection = () => {
@@ -12,7 +12,7 @@ const AboutSection = () => {
         "Deep learning, computer vision, natural language processing, and AI applications."
     },
     {
-      icon: <Robot className="w-10 h-10 text-tech-accent-purple" />,
+      icon: <Bot className="w-10 h-10 text-tech-accent-purple" />,
       title: "Robotics",
       description:
         "Design, construction, and programming of robots for various applications."
