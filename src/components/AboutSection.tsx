@@ -37,7 +37,7 @@ const AboutSection = () => {
       
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-xl mx-auto text-center mb-16 animate-fade-in">
-          <h2 className="section-heading mx-auto">About TechClub</h2>
+          <h2 className="section-heading mx-auto">About Aprameya</h2>
           <p className="text-muted-foreground mt-4">
             We're a community of tech enthusiasts dedicated to exploring the frontiers of technology and innovation. Our club brings together people with diverse skills and backgrounds to collaborate on exciting projects.
           </p>

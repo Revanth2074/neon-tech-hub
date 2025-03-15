@@ -51,7 +51,7 @@ export default function Join() {
       await signup(email, password, name, 'aspirant');
       toast({
         title: "Account created!",
-        description: "Welcome to TechClub. Your account has been created successfully.",
+        description: "Welcome to Aprameya. Your account has been created successfully.",
       });
     } catch (err: any) {
       console.error(err);
@@ -75,7 +75,7 @@ export default function Join() {
       <div className="container max-w-md mx-auto px-4 pt-32 pb-16">
         <div className="space-y-6 bg-tech-muted p-8 rounded-xl shadow-lg border border-border">
           <div className="text-center">
-            <h1 className="text-2xl font-bold tracking-tight">Join TechClub</h1>
+            <h1 className="text-2xl font-bold tracking-tight">Join Apremaya</h1>
             <p className="text-muted-foreground mt-2">Create a new account</p>
           </div>
 

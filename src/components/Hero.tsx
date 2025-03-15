@@ -26,7 +26,7 @@ const Hero = () => {
             
             <p className="text-lg text-muted-foreground leading-relaxed">
               Join a community of innovators, developers, and tech enthusiasts working on cutting-edge projects. 
-              Learn, collaborate, and build the future together at TechClub.
+              Learn, collaborate, and build the future together at Aprameya.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
@@ -80,7 +80,7 @@ const Hero = () => {
                           ))}
                         </div>
                         <div className="relative z-10 text-center p-6">
-                          <h3 className="text-lg font-semibold mb-2">TechClub</h3>
+                          <h3 className="text-lg font-semibold mb-2">Aprameya</h3>
                           <p className="text-sm text-muted-foreground">Future-focused innovation hub</p>
                         </div>
                       </div>

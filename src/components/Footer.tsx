@@ -1,6 +1,5 @@
-
 import { Link } from "react-router-dom";
-import { Mail, Github, Linkedin, Twitter, Instagram } from "lucide-react";
+import { Mail, Github, Linkedin, Twitter, Instagram} from "lucide-react";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -11,13 +10,9 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
           <div className="md:col-span-1">
             <Link to="/" className="flex items-center gap-2 mb-4 group">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-tech-accent-blue to-tech-accent-purple flex items-center justify-center">
-                <div className="w-8 h-8 rounded-full bg-tech-darker flex items-center justify-center text-white font-display font-bold">
-                  TC
-                </div>
-              </div>
+              <img src="Aprameya Logo-White.png" alt="Aprameya Logo" className="w-12 h-12" />
               <span className="text-xl font-display font-semibold tracking-tight group-hover:text-tech-accent-blue transition-colors">
-                TechClub
+                Aprameya
               </span>
             </Link>
             <p className="text-muted-foreground text-sm mb-6">
@@ -27,13 +22,13 @@ const Footer = () => {
               <a href="#" className="text-muted-foreground hover:text-tech-accent-blue transition-colors" aria-label="GitHub">
                 <Github className="w-5 h-5" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-tech-accent-blue transition-colors" aria-label="LinkedIn">
+              <a href="https://www.linkedin.com/company/aprameyaclub/" className="text-muted-foreground hover:text-tech-accent-blue transition-colors" aria-label="LinkedIn">
                 <Linkedin className="w-5 h-5" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-tech-accent-blue transition-colors" aria-label="Twitter">
+              <a href="https://x.com/aprameya_klu" className="text-muted-foreground hover:text-tech-accent-blue transition-colors" aria-label="Twitter">
                 <Twitter className="w-5 h-5" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-tech-accent-blue transition-colors" aria-label="Instagram">
+              <a href="https://www.instagram.com/aprameya_klu?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" className="text-muted-foreground hover:text-tech-accent-blue transition-colors" aria-label="Instagram">
                 <Instagram className="w-5 h-5" />
               </a>
             </div>
@@ -113,8 +108,8 @@ const Footer = () => {
             </p>
             <div className="flex items-center gap-2 text-muted-foreground mb-2 text-sm">
               <Mail className="w-4 h-4 text-tech-accent-blue" />
-              <a href="mailto:info@techclub.com" className="hover:text-tech-accent-blue transition-colors">
-                info@techclub.com
+              <a href="mailto:aprameya.techclub@kluniversity.in" className="hover:text-tech-accent-blue transition-colors">
+                aprameya.techclub@kluniversity.in
               </a>
             </div>
             <Link 
@@ -128,7 +123,7 @@ const Footer = () => {
         
         <div className="pt-8 mt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-muted-foreground text-sm text-center md:text-left">
-            © {currentYear} TechClub. All rights reserved.
+            © {currentYear} Aprameya. All rights reserved.
           </p>
           <div className="flex gap-6">
             <Link to="/privacy" className="text-muted-foreground hover:text-tech-accent-blue transition-colors text-sm">

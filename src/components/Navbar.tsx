@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Menu, X, ChevronDown, LogIn, UserCircle } from "lucide-react";
@@ -49,14 +48,10 @@ const Navbar = () => {
       )}
     >
       <div className="container mx-auto flex justify-between items-center">
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-tech-accent-blue to-tech-accent-purple flex items-center justify-center animate-pulse-glow">
-            <div className="w-8 h-8 rounded-full bg-tech-darker flex items-center justify-center text-white font-display font-bold">
-              TC
-            </div>
-          </div>
+      <Link to="/" className="flex items-center gap-2 group">
+          <img src="Aprameya Logo-White.png" alt="Aprameya Logo" className="w-14 h-14" />
           <span className="text-xl font-display font-semibold tracking-tight group-hover:text-tech-accent-blue transition-colors">
-            TechClub
+            Aprameya
           </span>
         </Link>
 

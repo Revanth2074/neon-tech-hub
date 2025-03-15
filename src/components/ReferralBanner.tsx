@@ -21,7 +21,7 @@ const ReferralBanner = () => {
             <div className="flex-1">
               <h2 className="text-2xl md:text-3xl font-bold mb-3">Refer Friends, Earn Rewards</h2>
               <p className="text-muted-foreground mb-6">
-                Invite your friends to join TechClub and earn points for each successful sign-up. 
+                Invite your friends to join Aprameya and earn points for each successful sign-up. 
                 Redeem your points for exclusive access to workshops, club merchandise, and more!
               </p>
               

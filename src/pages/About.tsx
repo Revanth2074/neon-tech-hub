@@ -56,7 +56,7 @@ const About = () => {
         <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-3xl mx-auto text-center mb-16 animate-fade-in">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-tech-accent-blue via-tech-accent-purple to-tech-accent-teal bg-clip-text text-transparent">
-              About TechClub
+              About Aprameya
             </h1>
             <p className="text-xl text-muted-foreground">
               We're a community of tech enthusiasts dedicated to exploring the frontiers of technology and innovation. Our club brings together people with diverse skills and backgrounds to collaborate on exciting projects.
@@ -145,8 +145,8 @@ const About = () => {
                   <div className="flex flex-col gap-4">
                     <div className="flex items-center gap-3">
                       <Mail className="h-5 w-5 text-tech-accent-teal" />
-                      <a href="mailto:info@techclub.org" className="hover:text-tech-accent-teal transition-colors">
-                        info@techclub.org
+                      <a href="mailto:info@Aprameya.org" className="hover:text-tech-accent-teal transition-colors">
+                        info@Aprameya.org
                       </a>
                     </div>
                     <div className="flex items-center gap-3">
@@ -174,7 +174,7 @@ const About = () => {
                     Interested in joining our community? We welcome tech enthusiasts of all levels. Attend our next event or reach out directly to learn more about membership opportunities.
                   </p>
                   <Button className="w-full bg-tech-accent-blue hover:bg-tech-accent-purple">
-                    Join TechClub
+                    Join Aprameya
                   </Button>
                 </CardContent>
               </Card>

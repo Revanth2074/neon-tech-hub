@@ -37,7 +37,7 @@ export default function Login() {
       await login(email, password);
       toast({
         title: "Login successful!",
-        description: "Welcome back to TechClub",
+        description: "Welcome back to Apremaya",
       });
     } catch (err: any) {
       console.error(err);
@@ -60,7 +60,7 @@ export default function Login() {
         <div className="space-y-6 bg-tech-muted p-8 rounded-xl shadow-lg border border-border">
           <div className="text-center">
             <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
-            <p className="text-muted-foreground mt-2">Login to access your TechClub account</p>
+            <p className="text-muted-foreground mt-2">Login to access your Apremaya account</p>
           </div>
 
           {error && (
