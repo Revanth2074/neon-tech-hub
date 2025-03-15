@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { Layout } from '@/components/Layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -16,8 +16,19 @@ export default function Join() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { signup } = useAuth();
+  const { user, signup } = useAuth();
   const { toast } = useToast();
+
+  // Redirect if already logged in
+  if (user) {
+    if (user.role === 'admin') {
+      return <Navigate to="/admin/dashboard" />;
+    } else if (user.role === 'coreteam') {
+      return <Navigate to="/team/dashboard" />;
+    } else {
+      return <Navigate to="/dashboard" />;
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,8 +48,9 @@ export default function Join() {
         title: "Account created!",
         description: "Welcome to TechClub. Your account has been created successfully.",
       });
-    } catch (err) {
-      setError('Could not create account. Please try again.');
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || 'Could not create account. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -100,6 +112,7 @@ export default function Join() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
+                minLength={6}
               />
             </div>
 
@@ -114,6 +127,7 @@ export default function Join() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••"
                 required
+                minLength={6}
               />
             </div>
 

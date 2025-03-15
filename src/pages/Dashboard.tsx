@@ -1,16 +1,66 @@
 
-import { useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Navigate, Link } from 'react-router-dom';
 import { Layout } from '@/components/Layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
+
+interface RegisteredEvent {
+  id: string;
+  title: string;
+  date: string;
+  location: string;
+}
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
+  const [registeredEvents, setRegisteredEvents] = useState<RegisteredEvent[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) return;
-    console.log('User logged in:', user);
+    const fetchUserEvents = async () => {
+      if (!user) return;
+      
+      try {
+        // Fetch events the user is registered for
+        const { data, error } = await supabase
+          .from('event_registrations')
+          .select(`
+            event_id,
+            events:event_id (
+              id,
+              title,
+              date,
+              location
+            )
+          `)
+          .eq('user_id', user.id);
+
+        if (error) {
+          console.error('Error fetching registered events:', error);
+          return;
+        }
+
+        if (data) {
+          // Transform the data to match the expected format
+          const transformedEvents = data.map(item => ({
+            id: item.events.id,
+            title: item.events.title,
+            date: new Date(item.events.date).toLocaleDateString(),
+            location: item.events.location
+          }));
+          
+          setRegisteredEvents(transformedEvents);
+        }
+      } catch (err) {
+        console.error('Error in fetchUserEvents:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserEvents();
   }, [user]);
 
   if (!user) {
@@ -65,8 +115,23 @@ export default function Dashboard() {
             
             <div className="bg-tech-darker p-6 rounded-lg border border-border">
               <h2 className="text-lg font-medium mb-4">Registered Events</h2>
-              <p className="text-muted-foreground">You haven't registered for any events yet.</p>
-              <Button className="mt-4 w-full">Browse Events</Button>
+              {isLoading ? (
+                <p className="text-muted-foreground">Loading your events...</p>
+              ) : registeredEvents.length > 0 ? (
+                <div className="space-y-3">
+                  {registeredEvents.map((event) => (
+                    <div key={event.id} className="p-3 bg-tech-dark/40 rounded-lg">
+                      <p className="font-medium">{event.title}</p>
+                      <p className="text-sm text-muted-foreground">{event.date} • {event.location}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted-foreground">You haven't registered for any events yet.</p>
+              )}
+              <Button className="mt-4 w-full" asChild>
+                <Link to="/events">Browse Events</Link>
+              </Button>
             </div>
             
             <div className="bg-tech-darker p-6 rounded-lg border border-border">

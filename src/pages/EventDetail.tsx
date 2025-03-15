@@ -1,78 +1,107 @@
-
-import { useParams } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { Calendar, MapPin, Clock, Users, Share2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+
+// Mock event data - in a real app, this would come from the database
+const mockEvents = [
+  {
+    id: "1",
+    title: "AI Workshop: Neural Networks",
+    date: "June 15, 2023",
+    time: "2:00 PM - 4:00 PM",
+    location: "Tech Hub, Room 204",
+    capacity: 30,
+    registered: 18,
+    description: "Join us for an immersive workshop on neural networks. We'll cover the basics of deep learning and implement a simple neural network together.",
+    longDescription: "This workshop is designed for beginners and intermediate programmers interested in the field of artificial intelligence. We'll start with the fundamentals of neural networks, exploring how they mimic the human brain to solve complex problems. Throughout the session, participants will build their own simple neural network using Python and popular libraries like TensorFlow and PyTorch. By the end of the workshop, you'll have a working model that can recognize basic patterns and understand the core principles that power modern AI systems.",
+    prerequisites: ["Basic Python knowledge", "Laptop with Python installed", "Interest in AI and machine learning"],
+    instructors: ["Alex Chen", "Sophia Rodriguez"],
+    image: "https://images.unsplash.com/photo-1558402529-e89a39cea782?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGFpJTIwd29ya3Nob3B8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: "2",
+    title: "Robotics Competition",
+    date: "July 8, 2023",
+    time: "10:00 AM - 5:00 PM",
+    location: "University Main Hall",
+    capacity: 50,
+    registered: 42,
+    description: "Participate in our annual robotics competition. Teams will showcase their robots in navigation, object manipulation, and obstacle courses.",
+    longDescription: "Our annual robotics competition brings together enthusiasts, students, and professionals to showcase their engineering prowess. Teams of up to 4 members will compete in three challenging categories: autonomous navigation through a complex maze, precise object manipulation and sorting, and traversing a dynamic obstacle course. Each team will have access to a preparation area and technical support. Spectators are welcome to witness cutting-edge robotics in action and vote for the audience favorite award. Whether you're competing or watching, this event promises to be an exciting demonstration of robotics innovation.",
+    prerequisites: ["Pre-built robot meeting competition specifications", "Team registration completed by June 15"],
+    instructors: ["Marcus Johnson", "Aisha Patel"],
+    image: "https://images.unsplash.com/photo-1561144257-e32e8602e0b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHJvYm90aWNzfGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: "3",
+    title: "Self-Driving Car Symposium",
+    date: "August 20, 2023",
+    time: "1:00 PM - 6:00 PM",
+    location: "Virtual Event",
+    capacity: 100,
+    registered: 65,
+    description: "Learn about the latest advancements in autonomous vehicle technology. Industry experts will discuss sensor fusion, decision making algorithms, and regulatory challenges.",
+    longDescription: "The Self-Driving Car Symposium brings together industry leaders, researchers, and policy makers for an in-depth exploration of autonomous vehicle technology. The virtual format allows participants from around the globe to engage with cutting-edge presentations and panel discussions. Topics include advanced sensor fusion techniques, real-time decision making algorithms, ethical considerations in autonomous systems, and navigating the complex regulatory landscape. The symposium will feature keynote speeches from prominent figures in the field, interactive Q&A sessions, and virtual networking opportunities. Attendees will gain valuable insights into the current state and future direction of self-driving technology.",
+    prerequisites: ["Registration required", "Basic understanding of autonomous systems recommended"],
+    instructors: ["Dr. James Wilson (Tesla)", "Sarah Kim (Waymo)", "Prof. Michael Brown (MIT)"],
+    image: "https://images.unsplash.com/photo-1617704548623-340376564e68?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8c2VsZiUyMGRyaXZpbmclMjBjYXJ8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: "4",
+    title: "Coding Hackathon: AI Applications",
+    date: "September 5, 2023",
+    time: "9:00 AM - 9:00 PM",
+    location: "Tech Incubator Space",
+    capacity: 40,
+    registered: 22,
+    description: "A 12-hour hackathon focusing on developing innovative AI applications. Form teams and compete for prizes while building something amazing!",
+    longDescription: "This intensive 12-hour hackathon challenges participants to conceive, design, and develop AI-powered applications that address real-world problems. Teams of 2-5 members will work collaboratively to create functional prototypes. The event begins with a brief overview of available APIs and resources, followed by team formation for those who haven't already organized groups. Throughout the day, mentors will circulate to provide guidance and support. Meals and refreshments will be provided to keep energy levels high. The day concludes with project presentations and judging, with prizes awarded for innovation, technical achievement, and practical impact. This hackathon is perfect for programmers, designers, and creative thinkers looking to push the boundaries of AI application.",
+    prerequisites: ["Laptop and charger", "Development environment set up", "Basic programming knowledge", "GitHub account"],
+    instructors: ["Sophia Rodriguez", "Alex Chen", "Industry mentors"],
+    image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8aGFja2F0aG9ufGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=80",
+  }
+];
 
 const EventDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [isRegistered, setIsRegistered] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
-  // Mock event data - in a real app, this would come from an API
-  const events = [
-    {
-      id: 1,
-      title: "AI Workshop: Neural Networks",
-      date: "June 15, 2023",
-      time: "2:00 PM - 4:00 PM",
-      location: "Tech Hub, Room 204",
-      capacity: 30,
-      registered: 18,
-      description: "Join us for an immersive workshop on neural networks. We'll cover the basics of deep learning and implement a simple neural network together.",
-      longDescription: "This workshop is designed for beginners and intermediate programmers interested in the field of artificial intelligence. We'll start with the fundamentals of neural networks, exploring how they mimic the human brain to solve complex problems. Throughout the session, participants will build their own simple neural network using Python and popular libraries like TensorFlow and PyTorch. By the end of the workshop, you'll have a working model that can recognize basic patterns and understand the core principles that power modern AI systems.",
-      prerequisites: ["Basic Python knowledge", "Laptop with Python installed", "Interest in AI and machine learning"],
-      instructors: ["Alex Chen", "Sophia Rodriguez"],
-      image: "https://images.unsplash.com/photo-1558402529-e89a39cea782?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGFpJTIwd29ya3Nob3B8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      id: 2,
-      title: "Robotics Competition",
-      date: "July 8, 2023",
-      time: "10:00 AM - 5:00 PM",
-      location: "University Main Hall",
-      capacity: 50,
-      registered: 42,
-      description: "Participate in our annual robotics competition. Teams will showcase their robots in navigation, object manipulation, and obstacle courses.",
-      longDescription: "Our annual robotics competition brings together enthusiasts, students, and professionals to showcase their engineering prowess. Teams of up to 4 members will compete in three challenging categories: autonomous navigation through a complex maze, precise object manipulation and sorting, and traversing a dynamic obstacle course. Each team will have access to a preparation area and technical support. Spectators are welcome to witness cutting-edge robotics in action and vote for the audience favorite award. Whether you're competing or watching, this event promises to be an exciting demonstration of robotics innovation.",
-      prerequisites: ["Pre-built robot meeting competition specifications", "Team registration completed by June 15"],
-      instructors: ["Marcus Johnson", "Aisha Patel"],
-      image: "https://images.unsplash.com/photo-1561144257-e32e8602e0b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHJvYm90aWNzfGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      id: 3,
-      title: "Self-Driving Car Symposium",
-      date: "August 20, 2023",
-      time: "1:00 PM - 6:00 PM",
-      location: "Virtual Event",
-      capacity: 100,
-      registered: 65,
-      description: "Learn about the latest advancements in autonomous vehicle technology. Industry experts will discuss sensor fusion, decision making algorithms, and regulatory challenges.",
-      longDescription: "The Self-Driving Car Symposium brings together industry leaders, researchers, and policy makers for an in-depth exploration of autonomous vehicle technology. The virtual format allows participants from around the globe to engage with cutting-edge presentations and panel discussions. Topics include advanced sensor fusion techniques, real-time decision making algorithms, ethical considerations in autonomous systems, and navigating the complex regulatory landscape. The symposium will feature keynote speeches from prominent figures in the field, interactive Q&A sessions, and virtual networking opportunities. Attendees will gain valuable insights into the current state and future direction of self-driving technology.",
-      prerequisites: ["Registration required", "Basic understanding of autonomous systems recommended"],
-      instructors: ["Dr. James Wilson (Tesla)", "Sarah Kim (Waymo)", "Prof. Michael Brown (MIT)"],
-      image: "https://images.unsplash.com/photo-1617704548623-340376564e68?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8c2VsZiUyMGRyaXZpbmclMjBjYXJ8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      id: 4,
-      title: "Coding Hackathon: AI Applications",
-      date: "September 5, 2023",
-      time: "9:00 AM - 9:00 PM",
-      location: "Tech Incubator Space",
-      capacity: 40,
-      registered: 22,
-      description: "A 12-hour hackathon focusing on developing innovative AI applications. Form teams and compete for prizes while building something amazing!",
-      longDescription: "This intensive 12-hour hackathon challenges participants to conceive, design, and develop AI-powered applications that address real-world problems. Teams of 2-5 members will work collaboratively to create functional prototypes. The event begins with a brief overview of available APIs and resources, followed by team formation for those who haven't already organized groups. Throughout the day, mentors will circulate to provide guidance and support. Meals and refreshments will be provided to keep energy levels high. The day concludes with project presentations and judging, with prizes awarded for innovation, technical achievement, and practical impact. This hackathon is perfect for programmers, designers, and creative thinkers looking to push the boundaries of AI application.",
-      prerequisites: ["Laptop and charger", "Development environment set up", "Basic programming knowledge", "GitHub account"],
-      instructors: ["Sophia Rodriguez", "Alex Chen", "Industry mentors"],
-      image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8aGFja2F0aG9ufGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=80",
-    }
-  ];
+  const event = mockEvents.find(e => e.id === id);
 
-  const event = events.find(e => e.id === Number(id));
+  // Check if user is registered for this event
+  useEffect(() => {
+    const checkRegistration = async () => {
+      if (!user || !id) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('event_registrations')
+          .select('*')
+          .eq('event_id', id)
+          .eq('user_id', user.id)
+          .single();
+        
+        if (!error && data) {
+          setIsRegistered(true);
+        }
+      } catch (error) {
+        console.error('Error checking registration:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    checkRegistration();
+  }, [user, id]);
   
   if (!event) {
     return (
@@ -90,14 +119,46 @@ const EventDetail = () => {
     );
   }
 
-  const handleRegister = () => {
-    // In a real app, we would send a request to the server
-    setIsRegistered(true);
+  const handleRegister = async () => {
+    if (!user) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to register for events.",
+        variant: "destructive",
+      });
+      navigate('/login');
+      return;
+    }
     
-    toast({
-      title: "Registration Successful!",
-      description: "You have been registered for this event.",
-    });
+    if (isRegistered) {
+      toast({
+        title: "Already Registered",
+        description: "You are already registered for this event.",
+      });
+      return;
+    }
+    
+    try {
+      const { error } = await supabase.from('event_registrations').insert({
+        event_id: id,
+        user_id: user.id
+      });
+      
+      if (error) throw error;
+      
+      setIsRegistered(true);
+      toast({
+        title: "Registration Successful!",
+        description: "You have been registered for this event.",
+      });
+    } catch (error: any) {
+      console.error('Error registering for event:', error);
+      toast({
+        title: "Registration Failed",
+        description: error.message || "There was a problem with your registration.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleShare = () => {
@@ -203,14 +264,14 @@ const EventDetail = () => {
                   <div className="flex flex-col gap-3">
                     <Button 
                       onClick={handleRegister}
-                      disabled={isRegistered}
+                      disabled={isLoading || isRegistered}
                       className={`${
                         isRegistered 
                           ? "bg-tech-accent-green hover:bg-tech-accent-green"
                           : "bg-tech-accent-blue hover:bg-tech-accent-purple"
                       }`}
                     >
-                      {isRegistered ? "You're Registered!" : "Register Now"}
+                      {isLoading ? "Checking..." : isRegistered ? "You're Registered!" : "Register Now"}
                     </Button>
                     
                     <Button variant="outline" onClick={handleShare}>

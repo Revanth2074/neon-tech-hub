@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { Layout } from '@/components/Layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -14,8 +14,19 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { login } = useAuth();
+  const { user, login } = useAuth();
   const { toast } = useToast();
+
+  // Redirect if already logged in
+  if (user) {
+    if (user.role === 'admin') {
+      return <Navigate to="/admin/dashboard" />;
+    } else if (user.role === 'coreteam') {
+      return <Navigate to="/team/dashboard" />;
+    } else {
+      return <Navigate to="/dashboard" />;
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,8 +39,9 @@ export default function Login() {
         title: "Login successful!",
         description: "Welcome back to TechClub",
       });
-    } catch (err) {
-      setError('Invalid email or password. Please try again.');
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || 'Invalid email or password. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -101,14 +113,6 @@ export default function Login() {
                 Join now
               </Link>
             </p>
-          </div>
-
-          <div className="text-center text-xs text-muted-foreground">
-            <p>Demo accounts:</p>
-            <p>Admin: admin@techclub.com</p>
-            <p>Core Team: team@techclub.com</p>
-            <p>Aspirant: user@techclub.com</p>
-            <p>(Use any password for demo)</p>
           </div>
         </div>
       </div>
